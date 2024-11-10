@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediEZ - Login</title>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>MediEZ Login</h1>
+        <div class="input-container">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter your username">
+        </div>
+        <div class="input-container">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="login-output"></div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Developed by Tapoprasad Tripathy, Shreyash Tiwari, Sai Teja Chekuri / API used - Eden AI, 2024</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple user database
+        const userDatabase = {
+            "ARUNKUMART": "ARUN1234",
+            "ANEELIMA": "AN1234",
+            "NARAYANANP": "NARAYAN1234"
+        };
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === "" || password === "") {
+                document.getElementById('login-output').innerText = "Please fill in all fields.";
+                return;
+            }
+            
+            // Check if username exists and password matches
+            if (userDatabase[username] && userDatabase[username] === password) {
+                document.getElementById('login-output').innerText = "Login successful!";
+                
+                // Redirect to symptom checker page
+                setTimeout(() => {
+                    window.location.href = "/Users/tapoprasadtripathy/OPENAI/MEDIEZ/index2.html";
+                }, 1000); // delay for a better user experience
+            } else {
+                document.getElementById('login-output').innerText = "Invalid username or password.";
+            }
+        }
+    </script>
+</body>
+
+</html>
