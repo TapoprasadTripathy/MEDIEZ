@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediEZ - Symptom Checker</title>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>MediEZ Symptom Checker</h1>
+        <div class="input-container">
+            <label for="skill">Enter Your Symptoms:</label>
+            <input type="text" id="skill" placeholder="e.g., headache, fever, sore throat">
+            <button onclick="fetchSuggestions()">Check Possible Conditions</button>
+        </div>
+        <div id="output"></div>
+    </div>
+
+    <footer>
+        <p>Developed by Tapoprasad Tripathy, Shreyash Tiwari, Sai Teja Chekuri / API used - Eden AI, 2024</p>
+    </footer>
+
+    <script>
+        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWQ4YzI2MTQtYTkyYS00YWMzLTgyNWUtMzg4NDg2MzBjOGM2IiwidHlwZSI6ImFwaV90b2tlbiJ9.inDSWRPfGLVAMGcoP5oVWROG26F-obbdXMcT9ukl8fE';
+
+        function fetchSuggestions() {
+            const skill = document.getElementById('skill').value;
+            const instruction = `Suggest the disease according to the following symptoms ${skill} and only give straight direct answers with basic medication in treatments`;
+
+            document.getElementById('output').innerHTML = '<p>Loading suggestions...</p>';
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    instruction: instruction,
+                    providers: ["openai"]
+                })
+            };
+
+            fetch('https://api.edenai.run/v2/text/code_generation', options)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(response => {
+                    const generatedText = response.openai.generated_text;
+                    const formattedText = formatText(generatedText);
+                    document.getElementById('output').innerHTML = formattedText;
+                })
+                .catch(err => {
+                    console.error('Error fetching data from Eden AI API:', err);
+                    document.getElementById('output').innerText = `Error: ${err.message}`;
+                });
+        }
+
+        function formatText(text) {
+            const diseaseSection = `<ul><li>Possible Conditions:</li><ul>${text.split('\n\n')[0].split('\n').map(line => `<li>${line}</li>`).join('')}</ul></ul>`;
+            const treatmentSection = `<ul><li>Treatments:</li><ul>${text.split('\n\n')[1]?.split('\n').map(line => `<li>${line}</li>`).join('') || 'No treatment suggestions available.'}</ul></ul>`;
+            return `${diseaseSection}${treatmentSection}`;
+        }
+    </script>
+</body>
+
+</html>
